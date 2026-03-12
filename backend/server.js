@@ -58,6 +58,23 @@ app.get("/tasks", async (req, res) => {
   res.json(tasks);
 });
 
+app.put("/update/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { text } = req.body;
+
+    const updatedTask = await Task.findByIdAndUpdate(
+      id,
+      { text },
+      { new: true }
+    );
+
+    res.json(updatedTask);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 app.listen(5000, () => {
   console.log("Server running on port 5000");
 });

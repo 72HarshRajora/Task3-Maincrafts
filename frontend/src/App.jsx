@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import TaskItem from "./TaskItem";
 
 function App() {
   const [tasks, setTasks] = useState([]);
@@ -14,6 +15,7 @@ function App() {
 
   // Delete task
   const deleteTask = (id) => {
+
     fetch(`http://localhost:5000/delete/${id}`, {
       method: "DELETE"
     })
@@ -21,6 +23,7 @@ function App() {
         setTasks(tasks.filter(task => task._id !== id));
       })
       .catch(err => console.log(err));
+
   };
 
   // Add task
@@ -42,6 +45,22 @@ function App() {
       .catch(err => console.log(err));
   };
 
+  const updateTask = (id, newText) => {
+
+    fetch(`http://localhost:5000/update/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ text: newText })
+    })
+      .then(res => res.json())
+      .then(updated => {
+        setTasks(tasks.map(t => t._id === id ? updated : t));
+      })
+      .catch(err => console.log(err));
+  };
+
   return (
     <div style={{ padding: "20px" }}>
       <h1>MERN To-Do App</h1>
@@ -54,13 +73,12 @@ function App() {
 
       <ul>
         {tasks.map(task => (
-          <li key={task._id}>
-            {task.text}
-            <button
-              onClick={() => deleteTask(task._id)}
-              style={{ marginLeft: "10px", color: "red" }}
-            > Delete</button>
-          </li>
+          <TaskItem
+            key={task._id}
+            task={task}
+            onDelete={deleteTask}
+            onUpdate={updateTask}
+          />
         ))}
       </ul>
     </div>
